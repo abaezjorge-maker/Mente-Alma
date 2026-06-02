@@ -289,6 +289,34 @@
     #restartBtn:hover {
       background: #1d4ed8;
     }
+
+    .leaderboard {
+      margin-top: 18px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 14px;
+      color: #334155;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .leaderboard strong {
+      color: #0f172a;
+    }
+
+    .leaderboard-list {
+      margin-top: 10px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .leaderboard-item {
+      background: white;
+      border-radius: 12px;
+      padding: 10px;
+      border: 1px solid #e2e8f0;
+    }
   </style>
 </head>
 
@@ -342,6 +370,12 @@
         <p id="feedbackText" class="feedback"></p>
         <button id="nextBtn" onclick="nextQuestion()" style="display:none;">Siguiente</button>
         <button id="restartBtn" onclick="restartQuiz()" style="display:none;">Jugar otra vez</button>
+
+        <div class="leaderboard">
+          <strong>🏆 Scores guardados en este dispositivo</strong>
+          <div id="playerScoreText">Termina el juego para guardar tu score.</div>
+          <div id="leaderboardList" class="leaderboard-list"></div>
+        </div>
       </div>
     </section>
 
@@ -563,6 +597,51 @@
     function nextQuestion() {
       currentQuestion++;
       loadQuestion();
+    showLeaderboard();
+    }
+
+
+    function getPlayerName() {
+      const name = document.getElementById("name").value.trim();
+      return name || "Jugador";
+    }
+
+    function saveScore() {
+      const playerName = getPlayerName();
+      const scores = JSON.parse(localStorage.getItem("menteAlmaScores")) || [];
+      const newScore = {
+        name: playerName,
+        score: score,
+        date: new Date().toLocaleDateString("es-DO")
+      };
+
+      scores.push(newScore);
+      scores.sort((a, b) => b.score - a.score);
+      const topScores = scores.slice(0, 5);
+
+      localStorage.setItem("menteAlmaScores", JSON.stringify(topScores));
+      showLeaderboard();
+    }
+
+    function showLeaderboard() {
+      const scores = JSON.parse(localStorage.getItem("menteAlmaScores")) || [];
+      const leaderboardList = document.getElementById("leaderboardList");
+
+      if (!leaderboardList) return;
+
+      if (scores.length === 0) {
+        leaderboardList.innerHTML = "<div class='leaderboard-item'>Todavía no hay scores guardados.</div>";
+        return;
+      }
+
+      leaderboardList.innerHTML = scores.map((item, index) => {
+        return `
+          <div class="leaderboard-item">
+            ${index + 1}. <strong>${item.name}</strong> — ${item.score} puntos <br>
+            <small>${item.date}</small>
+          </div>
+        `;
+      }).join("");
     }
 
     function showFinalResult() {
@@ -579,6 +658,13 @@
       setTimeout(() => {
         feedback.textContent = message;
         restartBtn.style.display = "inline-block";
+
+        const playerScoreText = document.getElementById("playerScoreText");
+        if (playerScoreText) {
+          playerScoreText.textContent = `${getPlayerName()} terminó con ${score} puntos.`;
+        }
+
+        saveScore();
       }, 500);
     }
 
@@ -586,11 +672,19 @@
       currentQuestion = 0;
       score = 0;
       document.getElementById("restartBtn").style.display = "none";
+
+      const playerScoreText = document.getElementById("playerScoreText");
+      if (playerScoreText) {
+        playerScoreText.textContent = "Termina el juego para guardar tu score.";
+      }
+
       loadQuestion();
+    showLeaderboard();
     }
 
     // Cargar la primera pregunta al cargar la página
     loadQuestion();
+    showLeaderboard();
   </script>
 
 </body>

@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mente & Alma 🧠✨</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #f8fafc, #e0f2fe, #fefce8);
+      color: #1e293b;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 520px;
+      background: rgba(255, 255, 255, 0.92);
+      border-radius: 28px;
+      padding: 32px 24px;
+      box-shadow: 0 20px 60px rgba(15, 23, 42, 0.15);
+      text-align: center;
+      animation: fadeIn 0.8s ease;
+    }
+
+    .logo {
+      font-size: 42px;
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      font-size: 32px;
+      margin-bottom: 8px;
+      color: #0f172a;
+    }
+
+    .subtitle {
+      font-size: 16px;
+      color: #64748b;
+      margin-bottom: 28px;
+      line-height: 1.5;
+    }
+
+    .input-box {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #334155;
+    }
+
+    input {
+      width: 100%;
+      padding: 15px;
+      border-radius: 16px;
+      border: 1px solid #cbd5e1;
+      font-size: 16px;
+      outline: none;
+      transition: 0.3s;
+    }
+
+    input:focus {
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+    }
+
+    button {
+      width: 100%;
+      border: none;
+      padding: 15px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #38bdf8, #6366f1);
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 24px rgba(99, 102, 241, 0.25);
+    }
+
+    .result {
+      display: none;
+      margin-top: 28px;
+      padding: 24px;
+      border-radius: 24px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      animation: fadeIn 0.6s ease;
+    }
+
+    .greeting {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 18px;
+      color: #0f172a;
+    }
+
+    .verse {
+      font-size: 20px;
+      line-height: 1.6;
+      font-style: italic;
+      margin-bottom: 14px;
+      color: #1e293b;
+    }
+
+    .reference {
+      font-weight: bold;
+      color: #4f46e5;
+      margin-bottom: 18px;
+    }
+
+    .reflection {
+      font-size: 15px;
+      line-height: 1.6;
+      color: #475569;
+      background: white;
+      border-radius: 16px;
+      padding: 16px;
+      margin-top: 14px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .actions button {
+      font-size: 14px;
+      padding: 12px;
+    }
+
+    .copy-btn {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+    }
+
+    .new-btn {
+      background: linear-gradient(135deg, #f59e0b, #f97316);
+    }
+
+    footer {
+      margin-top: 24px;
+      font-size: 13px;
+      color: #94a3b8;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 26px 18px;
+      }
+
+      h1 {
+        font-size: 28px;
+      }
+
+      .actions {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="container">
+    <div class="logo">🧠✨</div>
+
+    <h1>Mente & Alma</h1>
+
+    <p class="subtitle">
+      Recibe una palabra bíblica personalizada para tu día.
+      Escribe tu nombre y deja que una promesa toque tu mente y tu alma.
+    </p>
+
+    <div class="input-box">
+      <label for="name">¿Cuál es tu nombre?</label>
+      <input type="text" id="name" placeholder="Ejemplo: Andy" />
+    </div>
+
+    <button onclick="generateVerse()">📖 Recibir mi versículo</button>
+
+    <section class="result" id="result">
+      <div class="greeting" id="greeting"></div>
+      <div class="verse" id="verse"></div>
+      <div class="reference" id="reference"></div>
+      <div class="reflection" id="reflection"></div>
+
+      <div class="actions">
+        <button class="copy-btn" onclick="copyVerse()">📋 Copiar</button>
+        <button class="new-btn" onclick="generateVerse(true)">🔄 Otro versículo</button>
+      </div>
+    </section>
+
+    <footer>
+      Mente & Alma 🧠✨ | Una palabra para cada día
+    </footer>
+  </main>
+
+  <script>
+    const verses = [
+      {
+        text: "Todo lo puedo en Cristo que me fortalece.",
+        reference: "Filipenses 4:13",
+        reflection: "Dios puede darte fuerza incluso cuando sientes que ya no puedes más."
+      },
+      {
+        text: "Jehová es mi pastor; nada me faltará.",
+        reference: "Salmos 23:1",
+        reflection: "No estás caminando solo. Dios conoce tus necesidades antes de que las digas."
+      },
+      {
+        text: "No temas, porque yo estoy contigo; no desmayes, porque yo soy tu Dios.",
+        reference: "Isaías 41:10",
+        reflection: "El miedo pierde fuerza cuando recuerdas que Dios está contigo."
+      },
+      {
+        text: "Encomienda a Jehová tu camino, confía en él; y él hará.",
+        reference: "Salmos 37:5",
+        reflection: "Cuando entregas tus planes a Dios, también le entregas la carga."
+      },
+      {
+        text: "Porque para Dios no hay nada imposible.",
+        reference: "Lucas 1:37",
+        reflection: "Lo que parece cerrado para ti puede abrirse cuando Dios interviene."
+      },
+      {
+        text: "El amor es sufrido, es benigno; el amor no tiene envidia.",
+        reference: "1 Corintios 13:4",
+        reflection: "El amor verdadero no destruye la paz; la construye con paciencia."
+      },
+      {
+        text: "Lámpara es a mis pies tu palabra, y lumbrera a mi camino.",
+        reference: "Salmos 119:105",
+        reflection: "Dios no siempre muestra todo el camino, pero sí la próxima dirección."
+      },
+      {
+        text: "Mas buscad primeramente el reino de Dios y su justicia, y todas estas cosas os serán añadidas.",
+        reference: "Mateo 6:33",
+        reflection: "Cuando Dios ocupa el primer lugar, lo demás empieza a tomar orden."
+      },
+      {
+        text: "Venid a mí todos los que estáis trabajados y cargados, y yo os haré descansar.",
+        reference: "Mateo 11:28",
+        reflection: "Dios no solo quiere verte fuerte; también quiere darte descanso."
+      },
+      {
+        text: "Cercano está Jehová a los quebrantados de corazón.",
+        reference: "Salmos 34:18",
+        reflection: "Cuando tu corazón está sensible, Dios no se aleja; se acerca más."
+      }
+    ];
+
+    let currentVerse = null;
+
+    function generateVerse(random = false) {
+      const nameInput = document.getElementById("name");
+      const name = nameInput.value.trim();
+
+      if (name === "") {
+        alert("Por favor, escribe tu nombre primero.");
+        nameInput.focus();
+        return;
+      }
+
+      let index;
+
+      if (random) {
+        index = Math.floor(Math.random() * verses.length);
+      } else {
+        const today = new Date();
+        const dateCode = today.getFullYear() + today.getMonth() + today.getDate();
+        let nameCode = 0;
+
+        for (let i = 0; i < name.length; i++) {
+          nameCode += name.charCodeAt(i);
+        }
+
+        index = (nameCode + dateCode) % verses.length;
+      }
+
+      currentVerse = verses[index];
+
+      document.getElementById("greeting").textContent =
+        "Hola, " + name + " 👋 Este versículo es para ti hoy:";
+
+      document.getElementById("verse").textContent =
+        "“" + currentVerse.text + "”";
+
+      document.getElementById("reference").textContent =
+        currentVerse.reference;
+
+      document.getElementById("reflection").textContent =
+        "💭 Reflexión: " + currentVerse.reflection;
+
+      document.getElementById("result").style.display = "block";
+    }
+
+    function copyVerse() {
+      const name = document.getElementById("name").value.trim();
+
+      if (!currentVerse) return;
+
+      const textToCopy =
+        "Hola, " + name + ". Este versículo es para ti hoy:\n\n" +
+        "“" + currentVerse.text + "”\n" +
+        currentVerse.reference + "\n\n" +
+        "Reflexión: " + currentVerse.reflection + "\n\n" +
+        "Mente & Alma 🧠✨";
+
+      navigator.clipboard.writeText(textToCopy)
+        .then(() => {
+          alert("Versículo copiado correctamente.");
+        })
+        .catch(() => {
+          alert("No se pudo copiar el texto.");
+        });
+    }
+  </script>
+
+</body>
+</html>

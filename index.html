@@ -188,6 +188,107 @@
         flex-direction: column;
       }
     }
+
+    /* Styles for the juego bíblico section */
+    .game-section {
+      margin-top: 40px;
+      padding: 40px 0;
+      text-align: center;
+    }
+
+    .game-section h2 {
+      font-size: 28px;
+      margin-bottom: 12px;
+      color: #0f172a;
+    }
+
+    .game-intro {
+      max-width: 650px;
+      margin: 0 auto 25px;
+      color: #555;
+      line-height: 1.6;
+    }
+
+    .quiz-card {
+      max-width: 650px;
+      margin: auto;
+      background: #ffffff;
+      border-radius: 22px;
+      padding: 25px;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+      text-align: left;
+    }
+
+    .quiz-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 20px;
+      font-weight: bold;
+      color: #2563eb;
+    }
+
+    #questionText {
+      font-size: 1.25rem;
+      margin-bottom: 20px;
+      color: #111827;
+    }
+
+    .options-box {
+      display: grid;
+      gap: 12px;
+    }
+
+    .option-btn {
+      width: 100%;
+      border: none;
+      padding: 14px;
+      border-radius: 14px;
+      background: #eff6ff;
+      color: #1e293b;
+      font-size: 1rem;
+      cursor: pointer;
+      text-align: left;
+      transition: 0.2s ease;
+    }
+
+    .option-btn:hover {
+      background: #dbeafe;
+      transform: scale(1.01);
+    }
+
+    .option-btn.correct {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .option-btn.wrong {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .feedback {
+      margin-top: 18px;
+      font-weight: bold;
+      min-height: 24px;
+    }
+
+    #nextBtn,
+    #restartBtn {
+      margin-top: 18px;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 14px;
+      background: #2563eb;
+      color: white;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    #nextBtn:hover,
+    #restartBtn:hover {
+      background: #1d4ed8;
+    }
   </style>
 </head>
 
@@ -210,6 +311,9 @@
 
     <button onclick="generateVerse()">📖 Recibir mi versículo</button>
 
+    <!-- Botón para desplazarse al juego bíblico -->
+    <button onclick="scrollToGame()">🎮 Juego Bíblico</button>
+
     <section class="result" id="result">
       <div class="greeting" id="greeting"></div>
       <div class="verse" id="verse"></div>
@@ -219,6 +323,25 @@
       <div class="actions">
         <button class="copy-btn" onclick="copyVerse()">📋 Copiar</button>
         <button class="new-btn" onclick="generateVerse(true)">🔄 Otro versículo</button>
+      </div>
+    </section>
+
+    <!-- Sección del juego bíblico -->
+    <section id="juego" class="game-section">
+      <h2>🎮 Juego Bíblico</h2>
+      <p class="game-intro">
+        Responde preguntas de fe, sabiduría y mente. Cada respuesta correcta suma luz a tu camino.
+      </p>
+      <div class="quiz-card">
+        <div class="quiz-top">
+          <span id="questionCounter">Pregunta 1 de 5</span>
+          <span id="scoreBox">Puntos: 0</span>
+        </div>
+        <h3 id="questionText">Cargando pregunta...</h3>
+        <div id="optionsBox" class="options-box"></div>
+        <p id="feedbackText" class="feedback"></p>
+        <button id="nextBtn" onclick="nextQuestion()" style="display:none;">Siguiente</button>
+        <button id="restartBtn" onclick="restartQuiz()" style="display:none;">Jugar otra vez</button>
       </div>
     </section>
 
@@ -346,6 +469,128 @@
           alert("No se pudo copiar el texto.");
         });
     }
+
+    /* Función para desplazarse suavemente a la sección del juego */
+    function scrollToGame() {
+      const gameSection = document.getElementById('juego');
+      if (gameSection) {
+        gameSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    /* Preguntas y lógica del juego bíblico */
+    const questions = [
+      {
+        question: "¿Qué hizo Jesús cuando estaba angustiado antes de ser entregado?",
+        options: ["Se escondió para siempre", "Oró al Padre", "Atacó a sus enemigos", "Perdió la fe"],
+        answer: "Oró al Padre"
+      },
+      {
+        question: "Según Proverbios, ¿qué es principio de la sabiduría?",
+        options: ["El dinero", "La fama", "El temor de Jehová", "La fuerza física"],
+        answer: "El temor de Jehová"
+      },
+      {
+        question: "¿Qué dijo Jesús sobre los cansados y cargados?",
+        options: ["Que se rindieran", "Que vinieran a Él", "Que huyeran", "Que pelearan solos"],
+        answer: "Que vinieran a Él"
+      },
+      {
+        question: "¿Cuál fruto del Espíritu ayuda a controlar impulsos y emociones?",
+        options: ["Dominio propio", "Orgullo", "Impaciencia", "Temor"],
+        answer: "Dominio propio"
+      },
+      {
+        question: "¿Qué personaje bíblico fue lanzado al foso de los leones?",
+        options: ["Moisés", "David", "Daniel", "Pedro"],
+        answer: "Daniel"
+      }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+    let answered = false;
+
+    function loadQuestion() {
+      answered = false;
+      const questionData = questions[currentQuestion];
+      document.getElementById("questionCounter").textContent =
+        `Pregunta ${currentQuestion + 1} de ${questions.length}`;
+      document.getElementById("scoreBox").textContent = `Puntos: ${score}`;
+      document.getElementById("questionText").textContent = questionData.question;
+      document.getElementById("feedbackText").textContent = "";
+      document.getElementById("nextBtn").style.display = "none";
+      const optionsBox = document.getElementById("optionsBox");
+      optionsBox.innerHTML = "";
+      questionData.options.forEach(option => {
+        const button = document.createElement("button");
+        button.className = "option-btn";
+        button.textContent = option;
+        button.onclick = () => checkAnswer(button, option);
+        optionsBox.appendChild(button);
+      });
+    }
+
+    function checkAnswer(button, selectedOption) {
+      if (answered) return;
+      answered = true;
+      const correctAnswer = questions[currentQuestion].answer;
+      const allButtons = document.querySelectorAll(".option-btn");
+      allButtons.forEach(btn => {
+        btn.disabled = true;
+        if (btn.textContent === correctAnswer) {
+          btn.classList.add("correct");
+        }
+      });
+      if (selectedOption === correctAnswer) {
+        score += 10;
+        button.classList.add("correct");
+        document.getElementById("feedbackText").textContent =
+          "✅ Correcto. Sumaste luz y sabiduría.";
+      } else {
+        button.classList.add("wrong");
+        document.getElementById("feedbackText").textContent =
+          `❌ Incorrecto. La respuesta correcta era: ${correctAnswer}`;
+      }
+      document.getElementById("scoreBox").textContent = `Puntos: ${score}`;
+      if (currentQuestion < questions.length - 1) {
+        document.getElementById("nextBtn").style.display = "inline-block";
+      } else {
+        showFinalResult();
+      }
+    }
+
+    function nextQuestion() {
+      currentQuestion++;
+      loadQuestion();
+    }
+
+    function showFinalResult() {
+      const feedback = document.getElementById("feedbackText");
+      const restartBtn = document.getElementById("restartBtn");
+      let message = "";
+      if (score >= 40) {
+        message = `🔥 Resultado final: ${score} puntos. Tu conocimiento va fuerte.`;
+      } else if (score >= 20) {
+        message = `✨ Resultado final: ${score} puntos. Vas bien, sigue aprendiendo.`;
+      } else {
+        message = `🌱 Resultado final: ${score} puntos. Cada intento también enseña.`;
+      }
+      setTimeout(() => {
+        feedback.textContent = message;
+        restartBtn.style.display = "inline-block";
+      }, 500);
+    }
+
+    function restartQuiz() {
+      currentQuestion = 0;
+      score = 0;
+      document.getElementById("restartBtn").style.display = "none";
+      loadQuestion();
+    }
+
+    // Cargar la primera pregunta al cargar la página
+    loadQuestion();
   </script>
 
 </body>
